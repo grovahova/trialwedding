@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 40 33% 97%;
+  --foreground: 160 30% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 160 30% 10%;
+  --muted: 40 20% 93%;
+  --muted-foreground: 160 10% 40%;
+  --primary: 158 68% 27%;
+  --primary-foreground: 40 33% 97%;
+  --accent: 38 62% 52%;
+  --accent-foreground: 160 30% 10%;
+  --destructive: 4 70% 50%;
+  --destructive-foreground: 40 33% 97%;
+  --border: 40 20% 88%;
+  --radius: 0.9rem;
+}
+
+.dark {
+  --background: 160 20% 7%;
+  --foreground: 40 33% 95%;
+  --card: 160 18% 10%;
+  --card-foreground: 40 33% 95%;
+  --muted: 160 12% 15%;
+  --muted-foreground: 40 12% 65%;
+  --primary: 152 55% 45%;
+  --primary-foreground: 160 20% 7%;
+  --accent: 38 62% 58%;
+  --accent-foreground: 160 20% 7%;
+  --destructive: 4 70% 55%;
+  --destructive-foreground: 40 33% 95%;
+  --border: 160 12% 18%;
+  --radius: 0.9rem;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.gold-hover {
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.gold-hover:hover {
+  box-shadow: 0 0 0 1px rgba(219, 169, 58, 0.45), 0 12px 30px -10px rgba(20, 79, 63, 0.25);
+  transform: translateY(-2px);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 999px;
+}
