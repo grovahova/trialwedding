@@ -1,13 +1,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { BudgetTable } from "@/components/budget/budget-table";
-import type { BudgetItem, WeddingEvent, Vendor } from "@/lib/types";
+import type { BudgetItem, WeddingEvent, Vendor, VendorBooking } from "@/lib/types";
 
 export default async function BudgetPage() {
   const supabase = createClient();
-  const [{ data: items }, { data: events }, { data: vendors }] = await Promise.all([
+  const [{ data: items }, { data: events }, { data: vendors }, { data: bookings }] = await Promise.all([
     supabase.from("budget_items").select("*").order("created_at", { ascending: false }),
     supabase.from("events").select("*").eq("status", "active").order("position"),
     supabase.from("vendors").select("*"),
+    supabase.from("vendor_bookings").select("*"),
   ]);
 
   return (
@@ -20,6 +21,7 @@ export default async function BudgetPage() {
         items={(items as BudgetItem[]) ?? []}
         events={(events as WeddingEvent[]) ?? []}
         vendors={(vendors as Vendor[]) ?? []}
+        bookings={(bookings as VendorBooking[]) ?? []}
       />
     </div>
   );

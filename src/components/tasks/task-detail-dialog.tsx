@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Loader2, Plus, Trash2, Send, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -46,6 +46,49 @@ export function TaskDetailDialog({
   const [saving, setSaving] = useState(false);
   const [newChecklistItem, setNewChecklistItem] = useState("");
   const [newComment, setNewComment] = useState("");
+  const [mentionedIds, setMentionedIds] = useState<string[]>([]);
+  const [mentionQuery, setMentionQuery] = useState<string | null>(null);
+  const commentInputRef = useRef<HTMLTextAreaElement>(null);
+
+  const mentionMatches = useMemo(() => {
+    if (mentionQuery === null) return [];
+    return members
+      .filter((m) => m.full_name.toLowerCase().includes(mentionQuery.toLowerCase()))
+      .slice(0, 5);
+  }, [mentionQuery, members]);
+
+  function handleCommentChange(value: string) {
+    setNewComment(value);
+    const match = value.match(/@([a-zA-Z ]{0,24})$/);
+    setMentionQuery(match ? match[1] : null);
+  }
+
+  function insertMention(member: Profile) {
+    const withoutPartial = newComment.replace(/@([a-zA-Z ]{0,24})$/, "");
+    setNewComment(`${withoutPartial}@${member.full_name} `);
+    setMentionedIds((prev) => Array.from(new Set([...prev, member.id])));
+    setMentionQuery(null);
+    commentInputRef.current?.focus();
+  }
+
+  function resolveMentions(text: string): string[] {
+    const found = members.filter((m) => text.includes(`@${m.full_name}`)).map((m) => m.id);
+    return Array.from(new Set([...mentionedIds, ...found]));
+  }
+
+  function renderCommentBody(body: string) {
+    const parts = body.split(/(@[A-Za-z ]+)/g);
+    return parts.map((part, i) => {
+      const isMention = part.startsWith("@") && members.some((m) => part === `@${m.full_name}`);
+      return isMention ? (
+        <span key={i} className="font-medium text-emerald-700 dark:text-emerald-400">
+          {part}
+        </span>
+      ) : (
+        <span key={i}>{part}</span>
+      );
+    });
+  }
 
   async function refetch() {
     const { data } = await supabase
@@ -123,11 +166,16 @@ export function TaskDetailDialog({
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    const { error } = await supabase
-      .from("task_comments")
-      .insert({ task_id: task.id, profile_id: user?.id, body: newComment });
+    const { error } = await supabase.from("task_comments").insert({
+      task_id: task.id,
+      profile_id: user?.id,
+      body: newComment,
+      mentioned_profile_ids: resolveMentions(newComment),
+    });
     if (error) return toast.error("Could not post comment");
     setNewComment("");
+    setMentionedIds([]);
+    setMentionQuery(null);
     await refetch();
   }
 
@@ -299,21 +347,48 @@ export function TaskDetailDialog({
                 </Avatar>
                 <div>
                   <span className="font-medium">{c.profile?.full_name ?? "Someone"}</span>{" "}
-                  <span className="text-muted-foreground">{c.body}</span>
+                  <span className="text-muted-foreground">{renderCommentBody(c.body)}</span>
                 </div>
               </div>
             ))}
+            {(task.comments?.length ?? 0) === 0 && (
+              <p className="text-xs text-muted-foreground">No comments yet — @mention someone to loop them in.</p>
+            )}
           </div>
-          <div className="flex gap-2">
+          <div className="relative flex gap-2">
             <Textarea
-              placeholder="Write a comment…"
+              ref={commentInputRef}
+              placeholder="Write a comment… type @ to mention someone"
               className="min-h-[40px]"
               value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
+              onChange={(e) => handleCommentChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey && mentionMatches.length === 0) {
+                  e.preventDefault();
+                  postComment();
+                }
+              }}
             />
             <Button type="button" variant="outline" size="icon" onClick={postComment}>
               <Send className="h-4 w-4" />
             </Button>
+            {mentionMatches.length > 0 && (
+              <div className="absolute bottom-full left-0 z-10 mb-1 w-56 overflow-hidden rounded-md border border-border bg-card shadow-soft-lg">
+                {mentionMatches.map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => insertMention(m)}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-muted"
+                  >
+                    <Avatar className="h-5 w-5">
+                      <AvatarFallback className="text-[9px]">{initials(m.full_name)}</AvatarFallback>
+                    </Avatar>
+                    {m.full_name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

@@ -51,8 +51,31 @@ Tailwind CSS, shadcn-style components, and Supabase (Auth, Postgres, Realtime, S
 - **Dark / light mode** (next-themes), global search (tasks/guests/vendors), activity
   log, urgency engine (`getUrgency` in `src/lib/utils.ts` for tasks, `getBookingUrgency`
   in `src/lib/bookings.ts` for vendor bookings).
+- **Day-of Itinerary** (`/itinerary`) — the run-of-show timeline: what's happening,
+  when, where, and who owns it (planner / parents / venue), grouped by day and by
+  track (guests vs. bride & groom), optionally linked to a specific event.
 - Festive visuals throughout — emerald/gold gradients per event type, animated
   progress rings, confetti on task and booking completion, gold-hover card lift.
+- **My Tasks** — a personal view (same Kanban/Table/List/Calendar toggle as All
+  Tasks) filtered to just what's assigned to you.
+- **Weekly Digest** (`/digest`) — a recap of what got completed this week, what's
+  due this week, anything overdue (tasks and bookings), and trials/fittings in the
+  next two weeks. "Share via WhatsApp" opens WhatsApp with the summary pre-filled
+  and lets you pick who or which group to send it to (no phone number needed); or
+  copy the text to paste anywhere.
+- **@mentions in task comments** — typing `@` in a comment shows an autocomplete
+  of members; picking one notifies them, and they can reply even if they weren't
+  originally assigned to that task (enforced via RLS, not just the UI).
+- **Unified payment calendar** (on the Budget page) — pulls together budget-line
+  due dates, vendor booking balances, trial/tasting dates, and clothes fittings
+  into one chronological, urgency-colored list. A daily `pg_cron` job also pushes
+  an in-app notification to every admin 2 weeks before each one.
+- **Instant photo uploads** — a camera button on every shopping item opens the
+  phone's camera directly (via `capture="environment"`) and uploads straight to
+  Supabase Storage; tap again to view what's been uploaded.
+- **Add to Home Screen** — a proper PWA manifest + icons. Android/Chrome gets a
+  native install button in the topbar; iOS gets tap-by-tap instructions (Apple
+  doesn't allow the automatic prompt Android supports).
 
 ### Not wired up yet (left as clean extension points)
 - Receipt-upload UI for shopping items (the `receipts` Storage bucket + RLS policies
@@ -83,6 +106,13 @@ Tailwind CSS, shadcn-style components, and Supabase (Auth, Postgres, Realtime, S
      policy, and storage bucket.
    - `supabase/migrations/0002_vendor_bookings.sql` — adds the Vendor Booking Tracker
      table, RLS, activity logging, and the `contracts` storage bucket.
+   - `supabase/migrations/0003_collaboration_and_reminders.sql` — adds @mention
+     support on task comments, a `due_date` column on budget items, and automated
+     2-week-out payment/trial/fitting reminders via `pg_cron`. If this errors on
+     the `pg_cron` extension, enable it first via Supabase Dashboard → Database →
+     Extensions, then re-run just this file.
+   - `supabase/migrations/0004_itinerary.sql` — adds the Day-of Itinerary table
+     (run-of-show timeline, editable per event).
    - `supabase/seed.sql` — inserts the wedding date, the four default events, and one
      starter row per required vendor-booking category (**edit the date at the top of
      the file first**).

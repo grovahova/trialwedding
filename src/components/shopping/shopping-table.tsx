@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { AddShoppingItemDialog } from "@/components/shopping/add-shopping-item-dialog";
+import { ReceiptUploadButton } from "@/components/shopping/receipt-upload-button";
 import { formatCurrency } from "@/lib/utils";
 import { toast } from "sonner";
 import type { ShoppingItem, WeddingEvent, Profile } from "@/lib/types";
@@ -93,6 +94,7 @@ export function ShoppingTable({
                     <p className="text-xs text-muted-foreground">Budget {formatCurrency(Number(item.budget_amount))}</p>
                   )}
                 </div>
+                <ReceiptUploadButton item={item} />
                 <Button
                   size="sm"
                   variant={item.status === "purchased" ? "default" : "outline"}

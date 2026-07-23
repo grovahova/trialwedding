@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { GlobalSearch } from "@/components/layout/global-search";
 import { MobileNav } from "@/components/layout/mobile-nav";
+import { InstallAppButton } from "@/components/layout/install-app-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -37,6 +38,7 @@ export function Topbar({ profile, events }: { profile: Profile; events: WeddingE
         <GlobalSearch />
       </div>
       <div className="flex items-center gap-2">
+        <InstallAppButton />
         <ThemeToggle />
         <NotificationBell userId={profile.id} />
         <DropdownMenu>

@@ -6,11 +6,14 @@ import {
   LayoutDashboard,
   CalendarHeart,
   ListChecks,
+  ListTodo,
+  Newspaper,
   ShoppingBag,
   Wallet,
   Users,
   Building2,
   ClipboardCheck,
+  Clock,
   Settings,
   Heart,
 } from "lucide-react";
@@ -20,7 +23,10 @@ import { EVENT_GRADIENTS } from "@/lib/constants";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/my-tasks", label: "My Tasks", icon: ListTodo },
   { href: "/tasks", label: "All Tasks", icon: ListChecks },
+  { href: "/itinerary", label: "Day-of Itinerary", icon: Clock },
+  { href: "/digest", label: "Weekly Digest", icon: Newspaper },
   { href: "/bookings", label: "Vendor Bookings", icon: ClipboardCheck },
   { href: "/shopping", label: "Shopping", icon: ShoppingBag },
   { href: "/budget", label: "Budget", icon: Wallet },

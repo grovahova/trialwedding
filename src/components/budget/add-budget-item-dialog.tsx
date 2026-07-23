@@ -43,6 +43,7 @@ export function AddBudgetItemDialog({
     eventId: defaultEventId ?? events[0]?.id ?? "",
     planned: "",
     actual: "",
+    dueDate: "",
     vendorId: "",
     paymentStatus: "unpaid" as PaymentStatus,
     notes: "",
@@ -59,6 +60,7 @@ export function AddBudgetItemDialog({
         event_id: form.eventId || null,
         planned_amount: Number(form.planned) || 0,
         actual_amount: Number(form.actual) || 0,
+        due_date: form.dueDate || null,
         vendor_id: form.vendorId || null,
         payment_status: form.paymentStatus,
         notes: form.notes || null,
@@ -66,7 +68,7 @@ export function AddBudgetItemDialog({
       if (error) throw error;
       toast.success("Budget item added");
       onOpenChange(false);
-      setForm({ ...form, itemName: "", planned: "", actual: "", notes: "" });
+      setForm({ ...form, itemName: "", planned: "", actual: "", dueDate: "", notes: "" });
       router.refresh();
     } catch (err: any) {
       toast.error(getErrorMessage(err));
@@ -133,6 +135,11 @@ export function AddBudgetItemDialog({
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label>Payment due date</Label>
+            <Input type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} />
+            <p className="text-xs text-muted-foreground">Shows on the payment calendar — you'll get a reminder 2 weeks before.</p>
           </div>
           <div className="flex flex-col gap-1.5">
             <Label>Notes</Label>

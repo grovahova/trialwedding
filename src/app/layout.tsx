@@ -19,6 +19,20 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "oneSIPisallittakes Wedding Planner",
   description: "The command center for our wedding — tasks, budget, guests, and every detail in one place.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "oneSIPisallittakes",
+  },
+  icons: {
+    icon: "/icons/icon-192.png",
+    apple: "/icons/apple-touch-icon.png",
+  },
+};
+
+export const viewport = {
+  themeColor: "#187d5c",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

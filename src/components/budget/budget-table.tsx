@@ -7,8 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { AddBudgetItemDialog } from "@/components/budget/add-budget-item-dialog";
 import { BudgetChart } from "@/components/budget/budget-chart";
 import { BudgetSpendPieChart } from "@/components/budget/budget-spend-pie-chart";
-import { formatCurrency } from "@/lib/utils";
-import type { BudgetItem, WeddingEvent, Vendor } from "@/lib/types";
+import { UpcomingPaymentsCalendar } from "@/components/budget/upcoming-payments-calendar";
+import { formatCurrency, formatDate } from "@/lib/utils";
+import type { BudgetItem, WeddingEvent, Vendor, VendorBooking } from "@/lib/types";
 
 const PAYMENT_BADGE: Record<string, string> = {
   unpaid: "bg-red-50 text-red-700 border-red-200",
@@ -20,11 +21,13 @@ export function BudgetTable({
   items,
   events,
   vendors,
+  bookings,
   defaultEventId,
 }: {
   items: BudgetItem[];
   events: WeddingEvent[];
   vendors: Vendor[];
+  bookings: VendorBooking[];
   defaultEventId?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -51,6 +54,8 @@ export function BudgetTable({
         </div>
       </div>
 
+      <UpcomingPaymentsCalendar budgetItems={items} bookings={bookings} />
+
       <div>
         <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Spend Analysis</h2>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -73,6 +78,7 @@ export function BudgetTable({
               <th className="px-4 py-3 font-medium">Category</th>
               <th className="px-4 py-3 font-medium">Planned</th>
               <th className="px-4 py-3 font-medium">Actual</th>
+              <th className="px-4 py-3 font-medium">Due</th>
               <th className="px-4 py-3 font-medium">Payment</th>
             </tr>
           </thead>
@@ -83,6 +89,7 @@ export function BudgetTable({
                 <td className="px-4 py-3 text-muted-foreground">{item.category}</td>
                 <td className="px-4 py-3">{formatCurrency(Number(item.planned_amount))}</td>
                 <td className="px-4 py-3">{formatCurrency(Number(item.actual_amount))}</td>
+                <td className="px-4 py-3 text-muted-foreground">{item.due_date ? formatDate(item.due_date) : "—"}</td>
                 <td className="px-4 py-3">
                   <Badge variant="outline" className={PAYMENT_BADGE[item.payment_status]}>
                     {item.payment_status.replace("_", " ")}
@@ -92,7 +99,7 @@ export function BudgetTable({
             ))}
             {items.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-10 text-center text-muted-foreground">
+                <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
                   No budget lines yet.
                 </td>
               </tr>

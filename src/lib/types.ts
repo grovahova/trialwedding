@@ -81,6 +81,7 @@ export interface TaskComment {
   task_id: string;
   profile_id: string | null;
   body: string;
+  mentioned_profile_ids: string[];
   created_at: string;
   profile?: Pick<Profile, "id" | "full_name" | "avatar_url">;
 }
@@ -107,6 +108,7 @@ export interface BudgetItem {
   item_name: string;
   planned_amount: number;
   actual_amount: number;
+  due_date: string | null;
   vendor_id: string | null;
   payment_status: PaymentStatus;
   notes: string | null;
@@ -163,6 +165,24 @@ export interface VendorBooking {
   created_at: string;
   updated_at: string;
   // joined
+  event?: Pick<WeddingEvent, "id" | "name" | "color_theme">;
+}
+
+export interface ItineraryItem {
+  id: string;
+  event_id: string | null;
+  item_date: string | null;
+  start_time: string | null;
+  end_time: string | null;
+  track: "guests" | "bride_groom" | "general";
+  title: string;
+  location: string | null;
+  responsible_party: string | null;
+  notes: string | null;
+  position: number;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
   event?: Pick<WeddingEvent, "id" | "name" | "color_theme">;
 }
 

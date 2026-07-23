@@ -5,7 +5,7 @@ import { EventDetailTabs } from "@/components/events/event-detail-tabs";
 import { Progress } from "@/components/ui/progress";
 import { EVENT_GRADIENTS } from "@/lib/constants";
 import { cn, formatDate } from "@/lib/utils";
-import type { Profile, WeddingEvent, ShoppingItem, BudgetItem, Vendor } from "@/lib/types";
+import type { Profile, WeddingEvent, ShoppingItem, BudgetItem, Vendor, VendorBooking } from "@/lib/types";
 
 export default async function EventDetailPage({ params }: { params: { eventId: string } }) {
   const supabase = createClient();
@@ -16,12 +16,13 @@ export default async function EventDetailPage({ params }: { params: { eventId: s
   const { data: event } = await supabase.from("events").select("*").eq("id", params.eventId).single();
   if (!event) notFound();
 
-  const [tasks, { data: shopping }, { data: budget }, { data: vendors }, { data: allEvents }, { data: profiles }] =
+  const [tasks, { data: shopping }, { data: budget }, { data: vendors }, { data: bookings }, { data: allEvents }, { data: profiles }] =
     await Promise.all([
       getTasks(supabase, { eventId: params.eventId }),
       supabase.from("shopping_items").select("*").eq("event_id", params.eventId),
       supabase.from("budget_items").select("*").eq("event_id", params.eventId),
       supabase.from("vendors").select("*"),
+      supabase.from("vendor_bookings").select("*").eq("event_id", params.eventId),
       supabase.from("events").select("*").eq("status", "active").order("position"),
       supabase.from("profiles").select("*"),
     ]);
@@ -56,6 +57,7 @@ export default async function EventDetailPage({ params }: { params: { eventId: s
         shopping={(shopping as ShoppingItem[]) ?? []}
         budget={(budget as BudgetItem[]) ?? []}
         vendors={(vendors as Vendor[]) ?? []}
+        bookings={(bookings as VendorBooking[]) ?? []}
         events={(allEvents as WeddingEvent[]) ?? []}
         members={(profiles as Profile[]) ?? []}
         currentProfile={currentProfile}

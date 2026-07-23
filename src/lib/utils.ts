@@ -71,6 +71,11 @@ export function whatsappLink(phone: string, message: string) {
   return `https://wa.me/${clean.replace("+", "")}?text=${encodeURIComponent(message)}`;
 }
 
+/** No phone number — opens WhatsApp and lets the person pick who/which group to send to. */
+export function whatsappShareLink(message: string) {
+  return `https://wa.me/?text=${encodeURIComponent(message)}`;
+}
+
 /**
  * Supabase (and fetch failures in general) don't always throw a plain Error
  * with a useful `.message` — sometimes it's an AuthApiError with an empty
